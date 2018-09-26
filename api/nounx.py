@@ -4,6 +4,8 @@ import os
 import re
 import math
 
+
+# Minimum occurrence of DF(Document Frequency) of words to be a noun candidate.
 MIN_DF = 20
 
 ws_ptn = re.compile(u'[^a-zA-Z0-9_ㄱ-ㅎ가-힣]+')
@@ -16,8 +18,12 @@ class NounX:
         self._postfix_ptn = [None, None]
 
         dic = {}
-        if os.path.isfile(dic_path):
-            f = open(dic_path, 'rt')
+
+
+        print("경로")
+        print(os.path.isfile("/mnt/d/sjyoo/Study/안드로이드/TServer/TServer/api/dic.txt"))
+        if os.path.isfile("/mnt/d/sjyoo/Study/안드로이드/TServer/TServer/api/dic.txt"):
+            f = open("/mnt/d/sjyoo/Study/안드로이드/TServer/TServer/api/dic.txt", 'rt')
             for line in f:
                 lst = line.strip().split(u'\t')
                 if len(lst) != 2:
@@ -27,29 +33,10 @@ class NounX:
                 except:
                     continue
             f.close()
+            
         self._dic = dic
-
-        # postfix = [[], []]
-        # print(postfix_path)
-        # f = open(postfix_path, 'rt')
-        # for line in f:
-        #     lst = line.strip().split(u'\t')
-        #     if len(lst) != 2:
-        #         continue
-        #     priority = int(lst[0]) - 1
-        #     postfix[priority].append(lst[1])
-        # f.close()
-
-        # print(postfix)
-        # for i in range(2):
-        #     postfix_re = u'(%s' % postfix[i][0]
-        #     for s in postfix[i][1:]:
-        #         postfix_re += u'|%s' % s
-        #     postfix_re += u')$'
-        #     self._postfix_ptn[i] = re.compile(postfix_re)
-
         self._postfix_ptn = [re.compile('(가|나|는|당하는|당한|도|된|될|를|만|받고|은|을|의|이|이고|이나|이다|이란|이므로|입니다|하게|하고|하는|하며|한|할|합니다)$'), re.compile('(과|까지|당하고|당하지|되|되고|되어|로|로부터|로서|로써|만|받|받지|보다|부터|에|에게|에서|와|으로|으로부터|이라|이라고|이라면|이었다|조차|처럼|하기|하다|하다고|하면|하자|하지|한다|해서|해야|했다)$')]
-
+        
     def add_candidate(self, token, postfix, depth, term_list, postfix_list):
         assert depth <= 2
 
@@ -92,6 +79,7 @@ class NounX:
 
 
     def extract_noun(self, ustr, use_phrase=True):
+        print(ustr)
         result = []
         for token in map(lambda x: x.strip(), ws_ptn.split(ustr.lower())):
             candidate_list, postfix_list = self.find_possible(token)
@@ -117,6 +105,8 @@ class NounX:
                 # 알 수 없는 토큰일 때는 탭문자를 넣어서 "A \t B"가 "AB"의 프레이즈로 잡히지 않게 한다.
                 # 최종 결과를 리턴할 때는 명사 리스트에서 탭문자를 제거해준다.
                 result.append(u'\t')
+
+        print(result)
         return filter(lambda x: x != u'\t', result)
 
 
