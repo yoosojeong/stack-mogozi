@@ -189,9 +189,23 @@ class ChangeWordViewSet(viewsets.ModelViewSet):
                     except:
                         pass    
 
-            print(sentence)
+            
+
+            def checkTrait(c):
+                return (int((ord(c) - 0xAC00) % 28) != 0)
+
+            res = ''
+            for index, s in enumerate(sentence):
+                if(s == "을" and checkTrait(sentence[index-1]) == False):
+                    sentence = sentence[:index] + '를' + sentence[index+1:]
+                if(s == "를" and checkTrait(sentence[index-1]) == True):
+                    sentence = sentence[:index] + '을' + sentence[index+1:]
+            res += sentence
+
+            print(res)
+
             result['result'] = 200
-            result['sentence'] = sentence.encode().decode()
+            result['sentence'] = res.encode().decode()
             result['message'] = 'success'
                 
            
